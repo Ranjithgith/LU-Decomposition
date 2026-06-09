@@ -24,13 +24,14 @@ Program to find the L and U matrix.
 Developed by: RANJITH R
 RegisterNumber: 212224240131
 */
+import os
+os.environ["OPENBLAS_NUM_THREADS"]="1"
 import numpy as np
 from scipy.linalg import lu
-
-a = np.array(eval(input()))
-p,l,u = lu(a)
-print(l)
-print(u)
+A = np.array(eval(input()))
+P,L,U=lu(A)
+print(L)
+print(U)
 ```
 (ii) To find the LU Decomposition of a matrix
 ```
@@ -39,31 +40,54 @@ Program to find the LU Decomposition of a matrix.
 Developed by: RANJITH R
 RegisterNumber: 212224240131
 */
-import numpy as np
-from scipy.linalg import lu_factor,lu_solve
+A = eval(input())
+B = eval(input())
 
-A = np.array(eval(input()))
-B = np.array(eval(input()))
+n = len(A)
 
-L,P=lu_factor(A)
-X = lu_solve((L,P),B)
+L = [[0.0]*n for _ in range(n)]
+U = [[0.0]*n for _ in range(n)]
 
-print(X)
+for i in range(n):
+    L[i][i] = 1.0
+
+for i in range(n):
+    for j in range(i, n):
+        s = 0
+        for k in range(i):
+            s += L[i][k] * U[k][j]
+        U[i][j] = A[i][j] - s
+
+    for j in range(i+1, n):
+        s = 0
+        for k in range(i):
+            s += L[j][k] * U[k][i]
+        L[j][i] = (A[j][i] - s) / U[i][i]
+
+Y = [0]*n
+for i in range(n):
+    s = 0
+    for j in range(i):
+        s += L[i][j] * Y[j]
+    Y[i] = B[i] - s
+
+X = [0]*n
+for i in range(n-1, -1, -1):
+    s = 0
+    for j in range(i+1, n):
+        s += U[i][j] * X[j]
+    X[i] = (Y[i] - s) / U[i][i]
+
+X = [round(i,3) for i in X]
+
+print("[ {:.3f}  {:.3f} {:.3f}]".format(X[0], X[1], X[2]))
 ```
 
 ## Output:
-<img width="978" height="984" alt="image" src="https://github.com/user-attachments/assets/f405011f-06ed-462d-9a55-4fd6e5c06434" />
+<img width="995" height="966" alt="image" src="https://github.com/user-attachments/assets/19c3a7d4-849d-4f33-931b-5dfb706735fa" />
 
+<img width="983" height="1002" alt="image" src="https://github.com/user-attachments/assets/484535d1-cebd-47b3-a850-f9f47dd07f61" />
 
-
-<img width="774" height="296" alt="Screenshot 2026-03-10 213034" src="https://github.com/user-attachments/assets/dc38e438-0fa8-425a-9214-f697159e3e1a" />
-
-
-<img width="1147" height="1029" alt="image" src="https://github.com/user-attachments/assets/43b20402-9c82-4604-a36d-02b90829784a" />
-
-
-
-<img width="585" height="127" alt="Screenshot 2026-03-10 213053" src="https://github.com/user-attachments/assets/1ec229b9-fb90-410b-b2c2-d853ea564f08" />
 
 ## Result:
 Thus the program to find the LU Decomposition of a matrix is written and verified using python programming.
